@@ -5,8 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.ArrayList;
@@ -77,7 +79,10 @@ class RestApiDemoController {
 //	private List<Coffee> coffees = new ArrayList<>();    // 여러 Coffee 객체 반환하기 위해 'Coffee 객체의 List 형태'로 정의
 	private final CoffeeRepository coffeeRepository;
 
+	/* 데이터 로딩은 별도 분리한 DataLoader에서 수행하고, 여기서는 coffeeRepository만 호출 */
 	public RestApiDemoController(CoffeeRepository coffeeRepository) {
+		this.coffeeRepository = coffeeRepository;
+		/*
 		this.coffeeRepository = coffeeRepository;
 
 		this.coffeeRepository.saveAll(List.of(
@@ -86,6 +91,7 @@ class RestApiDemoController {
 				new Coffee("Cafe Lareno"),
 				new Coffee("Cafe Tres Pontas")
 		));
+		*/
 		/*
 		// Spring JPA Data Repository 기능 구현 위한 주석 처리
 		coffees.addAll(List.of(new Coffee("Cafe Cereza"),
@@ -147,9 +153,9 @@ class RestApiDemoController {
 				new ResponseEntity<>(postCoffee(coffee), HttpStatus.CREATED) :
 				new ResponseEntity<>(coffee, HttpStatus.OK);
 		*/
-		return (!coffeeRepository.existsById(id))
-				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED)
-				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK);
+		return (coffeeRepository.existsById(id))
+				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK)
+				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED);
 	}
 
 	/* DELETE / @PathVariable로 전달받은 식별자 id를 받아서 목록에서 제거 */
@@ -157,5 +163,25 @@ class RestApiDemoController {
 	void deleteCoffee(@PathVariable String id) {
 //		coffees.removeIf(c -> c.getId().equals(id));
 		coffeeRepository.deleteById(id);
+	}
+}
+
+/* 데이터 로딩 작업을 위한 별도 클래스 생성 */
+@Component
+class DataLoader {
+	private final CoffeeRepository coffeeRepository;
+
+	public DataLoader(CoffeeRepository coffeeRepository) {
+		this.coffeeRepository = coffeeRepository;
+	}
+
+	@PostConstruct
+	private void loadData() {
+		coffeeRepository.saveAll(List.of(
+				new Coffee("Cafe Cereza"),
+				new Coffee("Cafe Ganador"),
+				new Coffee("Cafe Lareno"),
+				new Coffee("Cafe Tres Pontas")
+		));
 	}
 }
