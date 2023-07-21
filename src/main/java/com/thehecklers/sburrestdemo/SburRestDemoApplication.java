@@ -78,7 +78,6 @@ class RestApiDemoController {
 	/* Spring JPA Data Repository 기능 사용하기 위해 아래 코드 주석 */
 //	private List<Coffee> coffees = new ArrayList<>();    // 여러 Coffee 객체 반환하기 위해 'Coffee 객체의 List 형태'로 정의
 	private final CoffeeRepository coffeeRepository;
-
 	/* 데이터 로딩은 별도 분리한 DataLoader에서 수행하고, 여기서는 coffeeRepository만 호출 */
 	public RestApiDemoController(CoffeeRepository coffeeRepository) {
 		this.coffeeRepository = coffeeRepository;
