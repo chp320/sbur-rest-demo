@@ -72,12 +72,20 @@ class Coffee {
 @RestController
 @RequestMapping("/greeting")
 class GreetingController {
-	@Value("${greeting-name:Mirage}")	// 애플리케이션 환경 (application.properties)에 정의되지 않은 값이라면 Mirage를 기본값으로 한다.
-	private String name;		// @Value 어노테이션이 멤버 변수 name에 적용
+	@Value("${greeting-name:Mirage}")    // 애플리케이션 환경 (application.properties)에 정의되지 않은 값이라면 Mirage를 기본값으로 한다.
+	private String name;        // @Value 어노테이션이 멤버 변수 name에 적용
+
+	@Value("${greeting-coffee:${greeting-name} is drinking Cafe Cereza}")
+	private String coffee;
 
 	@GetMapping
 	String getGreeting() {
 		return name;
+	}
+
+	@GetMapping("/coffee")
+	String getNameAndCoffee() {
+		return coffee;
 	}
 }
 
