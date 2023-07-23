@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,11 @@ public class SburRestDemoApplication {
 		SpringApplication.run(SburRestDemoApplication.class, args);
 	}
 
+	@Bean
+	@ConfigurationProperties(prefix = "droid")
+	Droid createDroid() {
+		return new Droid();
+	}
 }
 
 /* DB 접속을 위해 스프링 데이터에서 제공하는 저장소(Repository) 사용을 위한 상속 */
@@ -75,25 +81,42 @@ class Coffee {
 @RestController
 @RequestMapping("/greeting")
 class GreetingController {
-	@Value("${greeting-name:Mirage}")    // 애플리케이션 환경 (application.properties)에 정의되지 않은 값이라면 Mirage를 기본값으로 한다.
-	private String name;        // @Value 어노테이션이 멤버 변수 name에 적용
+	private final Greeting greeting;
 
-	@Value("${greeting-coffee:${greeting-name} is drinking Cafe Cereza}")
-	private String coffee;
+	// 생성자 주입
+	public GreetingController(Greeting greeting) {
+		this.greeting = greeting;
+	}
 
 	@GetMapping
 	String getGreeting() {
-		return name;
+		return greeting.getName();
 	}
 
 	@GetMapping("/coffee")
 	String getNameAndCoffee() {
-		return coffee;
+		return greeting.getCoffee();
+	}
+}
+
+/* Droids 속성 사용한 동작 예제 */
+@RestController
+@RequestMapping("/droid")
+class DroidController {
+	private final Droid droid;
+
+	public DroidController(Droid droid) {
+		this.droid = droid;
+	}
+
+	@GetMapping
+	Droid getDroid() {
+		return droid;
 	}
 }
 
 /* @ConfigurationProperties 어노테이션 동작 예제 */
-@ConfigurationProperties(prefix = "greeting")	// @ConfigurationProperties 어노테이션은 @ConfigurationPropertiesScan 어노테이션을 통해 등록되어 수행된다.
+@ConfigurationProperties(prefix = "greeting")    // @ConfigurationProperties 어노테이션은 @ConfigurationPropertiesScan 어노테이션을 통해 등록되어 수행된다.
 class Greeting {
 	private String name;
 	private String coffee;
@@ -115,6 +138,25 @@ class Greeting {
 	}
 }
 
+class Droid {
+	private String id, desription;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getDesription() {
+		return desription;
+	}
+
+	public void setDesription(String desription) {
+		this.desription = desription;
+	}
+}
 
 /*
    @RestController 실습
