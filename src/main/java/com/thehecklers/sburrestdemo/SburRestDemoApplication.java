@@ -1,5 +1,6 @@
 package com.thehecklers.sburrestdemo;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.repository.CrudRepository;
@@ -66,6 +67,20 @@ class Coffee {
 		this.id = id;
 	}
 }
+
+/* application.properties 에 등록한 속성을 사용하는 예제 */
+@RestController
+@RequestMapping("/greeting")
+class GreetingController {
+	@Value("${greeting-name:Mirage}")	// 애플리케이션 환경 (application.properties)에 정의되지 않은 값이라면 Mirage를 기본값으로 한다.
+	private String name;		// @Value 어노테이션이 멤버 변수 name에 적용
+
+	@GetMapping
+	String getGreeting() {
+		return name;
+	}
+}
+
 
 
 /*
