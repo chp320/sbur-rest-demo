@@ -3,6 +3,8 @@ package com.thehecklers.sburrestdemo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class SburRestDemoApplication {
 
 	public static void main(String[] args) {
@@ -89,6 +92,28 @@ class GreetingController {
 	}
 }
 
+/* @ConfigurationProperties 어노테이션 동작 예제 */
+@ConfigurationProperties(prefix = "greeting")	// @ConfigurationProperties 어노테이션은 @ConfigurationPropertiesScan 어노테이션을 통해 등록되어 수행된다.
+class Greeting {
+	private String name;
+	private String coffee;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCoffee() {
+		return coffee;
+	}
+
+	public void setCoffee(String coffee) {
+		this.coffee = coffee;
+	}
+}
 
 
 /*
