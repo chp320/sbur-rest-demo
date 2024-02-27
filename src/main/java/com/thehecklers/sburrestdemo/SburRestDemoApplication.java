@@ -2,12 +2,11 @@ package com.thehecklers.sburrestdemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootApplication
@@ -20,6 +19,7 @@ public class SburRestDemoApplication {
 }
 
 @RestController
+@RequestMapping("/")
 class RestApiDemoController {
 	private List<Coffee> coffees = new ArrayList<>();
 
@@ -32,9 +32,21 @@ class RestApiDemoController {
 		));
 	}
 
-	@RequestMapping(value = "/coffess", method = RequestMethod.GET)
+	@GetMapping("/coffees")
 	Iterable<Coffee> getCoffees() {
 		return coffees;
+	}
+
+	// 단일 아이템 조회
+	@GetMapping("/coffees/{id}")
+	Optional<Coffee> getCoffeebyId(@PathVariable String id) {
+		for (Coffee c : coffees) {
+			if (c.getId().equals(id)) {
+				return Optional.of(c);
+			}
+		}
+
+		return Optional.empty();	// 해당하는 항목이 없으면 비어있는 값 반환
 	}
 }
 
