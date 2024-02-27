@@ -2,6 +2,8 @@ package com.thehecklers.sburrestdemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class SburRestDemoApplication {
 }
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/coffees")
 class RestApiDemoController {
 	private List<Coffee> coffees = new ArrayList<>();
 
@@ -32,13 +34,13 @@ class RestApiDemoController {
 		));
 	}
 
-	@GetMapping("/coffees")
+	@GetMapping
 	Iterable<Coffee> getCoffees() {
 		return coffees;
 	}
 
 	// 단일 아이템 조회
-	@GetMapping("/coffees/{id}")
+	@GetMapping("/{id}")
 	Optional<Coffee> getCoffeebyId(@PathVariable String id) {
 		for (Coffee c : coffees) {
 			if (c.getId().equals(id)) {
@@ -49,7 +51,7 @@ class RestApiDemoController {
 		return Optional.empty();    // 해당하는 항목이 없으면 비어있는 값 반환
 	}
 
-	@PostMapping("/coffees")
+	@PostMapping
 	Coffee postCoffee(@RequestBody Coffee coffee) {
 		coffees.add(coffee);
 		return coffee;
@@ -57,8 +59,8 @@ class RestApiDemoController {
 
 	// PUT 요청 - 기존 리소스 업데이트에 사용
 	// 특정 식별자로 커피 검색하고 찾으면 업데이트, 없으면 리소스 생성
-	@PutMapping("/coffees/{id}")
-	Coffee putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
+	@PutMapping("/{id}")
+	ResponseEntity<Coffee> putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
 		int coffeeIndex = -1;
 
 		for (Coffee c : coffees) {
@@ -68,10 +70,13 @@ class RestApiDemoController {
 			}
 		}
 
-		return (coffeeIndex == -1) ? postCoffee(coffee) : coffee;
+		return (coffeeIndex == -1) ?
+				new ResponseEntity<>(postCoffee(coffee), HttpStatus.CREATED) :
+				new ResponseEntity<>(coffee, HttpStatus.OK);
+
 	}
 
-	@DeleteMapping("/coffees/{id}")
+	@DeleteMapping("/{id}")
 	void deleteCoffee(@PathVariable String id) {
 		coffees.removeIf(c -> c.getId().equals(id));	// 근데 c 는 어디서 정의해서 가져온거지?? -_-;;
 	}
