@@ -70,6 +70,11 @@ class RestApiDemoController {
 
 		return (coffeeIndex == -1) ? postCoffee(coffee) : coffee;
 	}
+
+	@DeleteMapping("/coffees/{id}")
+	void deleteCoffee(@PathVariable String id) {
+		coffees.removeIf(c -> c.getId().equals(id));	// 근데 c 는 어디서 정의해서 가져온거지?? -_-;;
+	}
 }
 
 class Coffee {
