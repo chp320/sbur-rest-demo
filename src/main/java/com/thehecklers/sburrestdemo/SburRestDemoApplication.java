@@ -46,7 +46,13 @@ class RestApiDemoController {
 			}
 		}
 
-		return Optional.empty();	// 해당하는 항목이 없으면 비어있는 값 반환
+		return Optional.empty();    // 해당하는 항목이 없으면 비어있는 값 반환
+	}
+
+	@PostMapping("/coffees")
+	Coffee postCoffee(@RequestBody Coffee coffee) {
+		coffees.add(coffee);
+		return coffee;
 	}
 }
 
