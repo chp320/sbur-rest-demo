@@ -54,6 +54,22 @@ class RestApiDemoController {
 		coffees.add(coffee);
 		return coffee;
 	}
+
+	// PUT 요청 - 기존 리소스 업데이트에 사용
+	// 특정 식별자로 커피 검색하고 찾으면 업데이트, 없으면 리소스 생성
+	@PutMapping("/coffees/{id}")
+	Coffee putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
+		int coffeeIndex = -1;
+
+		for (Coffee c : coffees) {
+			if (c.getId().equals(id)) {
+				coffeeIndex = coffees.indexOf(c);
+				coffees.set(coffeeIndex, coffee);
+			}
+		}
+
+		return (coffeeIndex == -1) ? postCoffee(coffee) : coffee;
+	}
 }
 
 class Coffee {
