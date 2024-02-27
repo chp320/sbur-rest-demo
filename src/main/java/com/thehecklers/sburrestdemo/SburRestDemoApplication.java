@@ -1,5 +1,7 @@
 package com.thehecklers.sburrestdemo;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
@@ -82,9 +84,14 @@ class RestApiDemoController {
 	}
 }
 
+@Entity
 class Coffee {
-	private final String id;		// final 로 선언되어 한 번 할당 이후 절대 수정 불가
+	@Id
+	private String id;		// 기본 생성자(no-argument constructor) 사용을 위해서는 모든 멤버 변수가 final이 아닌 변경 가능으로 되어야 함
 	private String name;
+
+	public Coffee() {
+	}
 
 	public Coffee(String id, String name) {
 		this.id = id;
@@ -106,5 +113,11 @@ class Coffee {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	// id에 대한 변경자(mutator) 메서드 추가
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

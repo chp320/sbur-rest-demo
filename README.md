@@ -7,4 +7,5 @@
 - 인메모리 DB 인 `H2 DB` 를 사용함
 - $H2_HOME/bin/h2.sh 수행하여 콘솔 실행
   - 참고) https://bcp0109.tistory.com/315
+  - 나의 경우 `~/study/h2` 경로가 $H2_HOME 임.
 
