@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,11 @@ public class SburRestDemoApplication {
 		SpringApplication.run(SburRestDemoApplication.class, args);
 	}
 
+	@Bean
+	@ConfigurationProperties(prefix = "droid")
+	Droid createDroid() {
+		return new Droid();
+	}
 }
 
 /**
@@ -51,6 +57,23 @@ class DataLoader {
 	}
 }
 
+/**
+ * Droid 속성 정상 동작 여부 확인 클래스
+ */
+@RestController
+@RequestMapping("/droid")
+class DroidController {
+	private final Droid droid;
+
+	public DroidController(Droid droid) {
+		this.droid = droid;
+	}
+
+	@GetMapping
+	Droid getDroid() {
+		return droid;
+	}
+}
 
 /**
  * '어플리케이션 속성' 설정 처리 위한 클래스
@@ -119,6 +142,26 @@ class RestApiDemoController {
 	@DeleteMapping("/{id}")
 	void deleteCoffee(@PathVariable String id) {
 		coffeeRepository.deleteById(id);
+	}
+}
+
+class Droid {
+	private String id, description;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
 

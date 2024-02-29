@@ -16,3 +16,23 @@
   - $ http :8080/URI
   - ex) $ http :8080/coffees
 
+## springboot actuator
+- HTTPie 활용해서 actuator/env 값 조회 시, value가 "*****" 와 같이 노출되는 경우가 있음
+  - 예) $ http :8080/actuator/env
+```
+    "greeting.name": {
+        "origin": "class path resource [application.properties] - 1:15",
+        "value": "******"
+    },
+```
+- 이는 민감정보이기 대문에 hidden 처리된 것이며, 노출시키기 위해서는 application.properties 에 아래와 같이 설정 필요
+```
+management.endpoint.env.show-values=always
+``` 
+  - 결과
+```
+    "greeting.name": {
+        "origin": "class path resource [application.properties] - 1:15",
+        "value": "Dakota"
+    },
+```
