@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class SburRestDemoApplication {
 
 	public static void main(String[] args) {
@@ -56,21 +59,22 @@ class DataLoader {
 @RequestMapping("/greeting")
 class GreetingController {
 
-	// application.properties 에 미정의된 경우 Mirage 를 설정
-	@Value("${greeting-name: Mirage}")
-	private String name;
+	// @ConfigurationProperties 활용하는 Greeting 빈에 대한 멤버 변수 선언
+	private final Greeting greeting;
 
-	@Value("${greeting-coffee: ${greeting-name} is drinking Cafe Ganador}")
-	private String coffee;
+	// 생성자 주입
+	public GreetingController(Greeting greeting) {
+		this.greeting = greeting;
+	}
 
 	@GetMapping
 	String getGreeting() {
-		return name;
+		return greeting.getName();
 	}
 
 	@GetMapping("/coffee")
 	String getNameAndCoffee() {
-		return coffee;
+		return greeting.getCoffee();
 	}
 }
 
@@ -117,6 +121,30 @@ class RestApiDemoController {
 		coffeeRepository.deleteById(id);
 	}
 }
+
+/* @ConfigurationProperties 활용 */
+@ConfigurationProperties(prefix = "greeting")
+class Greeting {
+	private String name;
+	private String coffee;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCoffee() {
+		return coffee;
+	}
+
+	public void setCoffee(String coffee) {
+		this.coffee = coffee;
+	}
+}
+
 
 // DB 사용을 위한 Repository 인터페이스 상속할 인터페이스 정의
 interface CoffeeRepository extends CrudRepository<Coffee, String> {}
