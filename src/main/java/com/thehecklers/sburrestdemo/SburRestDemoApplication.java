@@ -1,5 +1,6 @@
 package com.thehecklers.sburrestdemo;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.boot.SpringApplication;
@@ -7,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,6 +25,29 @@ public class SburRestDemoApplication {
 
 }
 
+/**
+ * RestApiDemoController 에서 샘플 데이터 생성 역할을 DataLoader 클래스로 역할 분리
+ */
+@Component
+class DataLoader {
+	private final CoffeeRepository coffeeRepository;
+
+	public DataLoader(CoffeeRepository coffeeRepository) {
+		this.coffeeRepository = coffeeRepository;
+	}
+
+	@PostConstruct
+	private void loadData() {
+		coffeeRepository.saveAll(List.of(
+				new Coffee("Cafe Cereza"),
+				new Coffee("Cafe Ganador"),
+				new Coffee("Cafe Lareno"),
+				new Coffee("Cafe Tres Pontas")
+		));
+	}
+}
+
+
 @RestController
 @RequestMapping("/coffees")
 class RestApiDemoController {
@@ -32,14 +57,6 @@ class RestApiDemoController {
 
 	public RestApiDemoController(CoffeeRepository coffeeRepository) {
 		this.coffeeRepository = coffeeRepository;
-
-		/* repository 방식으로 변경 */
-		this.coffeeRepository.saveAll(List.of(
-				new Coffee("Cafe Cereze"),
-				new Coffee("Cafe Ganador"),
-				new Coffee("Cafe Lareno"),
-				new Coffee("Cafe Tres Pontas")
-		));
 	}
 
 	@GetMapping
@@ -63,9 +80,9 @@ class RestApiDemoController {
 	@PutMapping("/{id}")
 	ResponseEntity<Coffee> putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
 
-		return (!coffeeRepository.existsById(id))
-				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED)
-				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK);
+		return (coffeeRepository.existsById(id))
+				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK)
+				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED) ;
 
 	}
 
