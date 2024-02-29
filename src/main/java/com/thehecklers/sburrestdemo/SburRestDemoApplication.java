@@ -26,11 +26,16 @@ public class SburRestDemoApplication {
 @RestController
 @RequestMapping("/coffees")
 class RestApiDemoController {
-	private List<Coffee> coffees = new ArrayList<>();
 
-	public RestApiDemoController() {
-		coffees.addAll(List.of(
-				new Coffee("Cafe Cereza"),
+	// CoffeeRepository 주입
+	private final CoffeeRepository coffeeRepository;
+
+	public RestApiDemoController(CoffeeRepository coffeeRepository) {
+		this.coffeeRepository = coffeeRepository;
+
+		/* repository 방식으로 변경 */
+		this.coffeeRepository.saveAll(List.of(
+				new Coffee("Cafe Cereze"),
 				new Coffee("Cafe Ganador"),
 				new Coffee("Cafe Lareno"),
 				new Coffee("Cafe Tres Pontas")
@@ -39,49 +44,34 @@ class RestApiDemoController {
 
 	@GetMapping
 	Iterable<Coffee> getCoffees() {
-		return coffees;
+		return coffeeRepository.findAll();
 	}
 
 	// 단일 아이템 조회
 	@GetMapping("/{id}")
 	Optional<Coffee> getCoffeebyId(@PathVariable String id) {
-		for (Coffee c : coffees) {
-			if (c.getId().equals(id)) {
-				return Optional.of(c);
-			}
-		}
-
-		return Optional.empty();    // 해당하는 항목이 없으면 비어있는 값 반환
+		return coffeeRepository.findById(id);
 	}
 
 	@PostMapping
 	Coffee postCoffee(@RequestBody Coffee coffee) {
-		coffees.add(coffee);
-		return coffee;
+		return coffeeRepository.save(coffee);
 	}
 
 	// PUT 요청 - 기존 리소스 업데이트에 사용
 	// 특정 식별자로 커피 검색하고 찾으면 업데이트, 없으면 리소스 생성
 	@PutMapping("/{id}")
 	ResponseEntity<Coffee> putCoffee(@PathVariable String id, @RequestBody Coffee coffee) {
-		int coffeeIndex = -1;
 
-		for (Coffee c : coffees) {
-			if (c.getId().equals(id)) {
-				coffeeIndex = coffees.indexOf(c);
-				coffees.set(coffeeIndex, coffee);
-			}
-		}
-
-		return (coffeeIndex == -1) ?
-				new ResponseEntity<>(postCoffee(coffee), HttpStatus.CREATED) :
-				new ResponseEntity<>(coffee, HttpStatus.OK);
+		return (!coffeeRepository.existsById(id))
+				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED)
+				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK);
 
 	}
 
 	@DeleteMapping("/{id}")
 	void deleteCoffee(@PathVariable String id) {
-		coffees.removeIf(c -> c.getId().equals(id));	// 근데 c 는 어디서 정의해서 가져온거지?? -_-;;
+		coffeeRepository.deleteById(id);
 	}
 }
 
