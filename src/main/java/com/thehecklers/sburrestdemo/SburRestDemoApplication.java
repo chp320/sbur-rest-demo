@@ -3,6 +3,7 @@ package com.thehecklers.sburrestdemo;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.repository.CrudRepository;
@@ -48,6 +49,31 @@ class DataLoader {
 }
 
 
+/**
+ * '어플리케이션 속성' 설정 처리 위한 클래스
+ */
+@RestController
+@RequestMapping("/greeting")
+class GreetingController {
+
+	// application.properties 에 미정의된 경우 Mirage 를 설정
+	@Value("${greeting-name: Mirage}")
+	private String name;
+
+	@Value("${greeting-coffee: ${greeting-name} is drinking Cafe Ganador}")
+	private String coffee;
+
+	@GetMapping
+	String getGreeting() {
+		return name;
+	}
+
+	@GetMapping("/coffee")
+	String getNameAndCoffee() {
+		return coffee;
+	}
+}
+
 @RestController
 @RequestMapping("/coffees")
 class RestApiDemoController {
@@ -82,7 +108,7 @@ class RestApiDemoController {
 
 		return (coffeeRepository.existsById(id))
 				? new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.OK)
-				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED) ;
+				: new ResponseEntity<>(coffeeRepository.save(coffee), HttpStatus.CREATED);
 
 	}
 
