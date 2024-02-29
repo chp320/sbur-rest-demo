@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,12 +85,16 @@ class RestApiDemoController {
 	}
 }
 
+// DB 사용을 위한 Repository 인터페이스 상속할 인터페이스 정의
+interface CoffeeRepository extends CrudRepository<Coffee, String> {}
+
 @Entity
 class Coffee {
 	@Id
 	private String id;		// 기본 생성자(no-argument constructor) 사용을 위해서는 모든 멤버 변수가 final이 아닌 변경 가능으로 되어야 함
 	private String name;
 
+	// 기본 생성자 추가 - JPA를 사용해 DB에 데이터 생성하기 위함.
 	public Coffee() {
 	}
 
@@ -115,8 +120,7 @@ class Coffee {
 		this.name = name;
 	}
 
-	// id에 대한 변경자(mutator) 메서드 추가
-
+	// id에 대한 변경자(mutator) 메서드 추가 - JPA가 id에 값 할당하기 위함
 	public void setId(String id) {
 		this.id = id;
 	}

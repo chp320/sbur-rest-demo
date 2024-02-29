@@ -9,3 +9,10 @@
   - 참고) https://bcp0109.tistory.com/315
   - 나의 경우 `~/study/h2` 경로가 $H2_HOME 임.
 
+## HTTP 기반 CLI 테스트 툴
+- HTTPie 활용
+- 프로젝트 Run > Terminal
+- 하기 명령어 수행
+  - $ http :8080/URI
+  - ex) $ http :8080/coffees
+
