@@ -36,3 +36,4 @@ management.endpoint.env.show-values=always
         "value": "Dakota"
     },
 ```
+- 참고) https://semtul79.tistory.com/16
